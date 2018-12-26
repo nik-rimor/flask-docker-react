@@ -45,16 +45,8 @@ def add_user():
             return jsonify(response_object), 400
     except exc.IntegrityError as e:
         db.session.rollback()
-        return jsonify(response_object), 400
-
-    db.session.add(User(username=username, email=email))
-    db.session.commit()
-    response_object = {
-        'status': 'success',
-        'message': f'{email} was added!'
-    }
-    return jsonify(response_object), 201
-
+        return jsonify(response_object), 400    
+        
 
 @users_blueprint.route('/users/<user_id>', methods=['GET'])
 def get_single_user(user_id):
@@ -71,7 +63,7 @@ def get_single_user(user_id):
             response_object = {
                 'status': 'success',
                 'data': {
-                    'id': user_id,
+                    'id': user.id,
                     'username': user.username,
                     'email': user.email,
                     'active': user.active
