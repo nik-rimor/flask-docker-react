@@ -4,22 +4,22 @@
 from flask import Blueprint, jsonify, request, render_template
 from sqlalchemy import exc
 
-from project.api.models import User 
+from project.api.models import User
 from project import db
 
 
-
 users_blueprint = Blueprint('users', __name__, template_folder='templates')
+
 
 @users_blueprint.route('/', methods=['GET', 'POST'])
 def index():
     # POST method response
     if request.method == 'POST':
-        username =  request.form['username']
+        username = request.form['username']
         email = request.form['email']
         db.session.add(User(username=username, email=email))
         db.session.commit()
-    # GET method response            
+    # GET method response
     users = User.query.all()
     return render_template('index.html', users=users)
 
@@ -33,7 +33,7 @@ def ping_pong():
 
 
 @users_blueprint.route('/users', methods=['POST'])
-def add_user():    
+def add_user():
     post_data = request.get_json()
     response_object = {
         'status': 'fail',
@@ -57,8 +57,8 @@ def add_user():
             return jsonify(response_object), 400
     except (exc.IntegrityError, ValueError) as e:
         db.session.rollback()
-        return jsonify(response_object), 400    
-        
+        return jsonify(response_object), 400
+
 
 @users_blueprint.route('/users/<user_id>', methods=['GET'])
 def get_single_user(user_id):
@@ -67,7 +67,7 @@ def get_single_user(user_id):
         'status': 'fail',
         'message': 'User does not exist'
     }
-    try:        
+    try:
         user = User.query.filter_by(id=int(user_id)).first()
         if not user:
             return jsonify(response_object), 404
@@ -84,7 +84,7 @@ def get_single_user(user_id):
             return jsonify(response_object), 200
     except ValueError:
         return jsonify(response_object), 404
-    
+
 
 @users_blueprint.route('/users', methods=['GET'])
 def get_all_users():
